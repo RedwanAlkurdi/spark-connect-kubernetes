@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: spark
+  annotations:
+    ingress.cilium.io/tls-passthrough: disabled # SSL termination happens on the ingress object
+    cert-manager.io/cluster-issuer: platform-issuer # we are using the preconfigured EDP platform cluster issuer to issue TLS certificates
+spec:
+  ingressClassName: cilium # the cilium ingress controller will take care of provisioning the LB
+  rules:
+  # the host FQDN must adhere to the DNS structure <host>.<project>.nzero.net and it will be automatically registered with EDP DNS via external-dns
+  - host: spark-ui.zerocarbon-1.nzero.net   
+    http:
+      paths:
+        - backend:
+            service:
+              name: {{ include "spark.serviceName" . }}-expose
+              port:
+                number: 4040
+          path: /
+          pathType: Prefix
+  - host: spark-connect.zerocarbon-1.nzero.net   
+    http:
+      paths:
+        - backend:
+            service:
+              name: {{ include "spark.serviceName" . }}-expose
+              port:
+                number: 15002
+          path: /
+          pathType: Prefix
+  tls: # the TLS certificate will be automatically issued by the platform issuer in the annotations
+    - hosts:
+        - spark-ui.zerocarbon-1.nzero.net # the TLS certificate will be created for the following FQDN
+#        - spark-connect.zerocarbon-1.nzero.net
+      secretName: spark-tls # the TLS certificate will be created in the following secret name

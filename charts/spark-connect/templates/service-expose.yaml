@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "spark.serviceName" . }}-expose
+spec:
+  ports:
+    - name: connect-server
+      protocol: TCP
+      port: 15002
+      targetPort: 15002
+    - name: spark-ui
+      protocol: TCP
+      port: 4040
+      targetPort: 4040
+  selector:
+{{- include "spark.selectorLabels" . | nindent 6 }}
+  type: ClusterIP

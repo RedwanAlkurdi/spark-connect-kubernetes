@@ -1,10 +1,11 @@
 replicaCount: 1
 
 image:
-  repository: ghrc.io/aagumin/spark-connect-kubernetes
-  tag: 1.0.0
+  repository: registry.bare.pandrosion.org/zerocarbon/team-a/projects/deploy/spark-connect-kubernetes #ghrc.io/aagumin/spark-connect-kubernetes
+  tag: 3.5.4-java17-python #3.5.4 #1.0.0
   pullPolicy: Always
-  imagePullSecrets: []
+  imagePullSecrets: 
+    - name: regcred #[]
 
 nameOverride: ""
 fullnameOverride: ""
@@ -15,11 +16,11 @@ spark:
     dir: ""
 
   celeborn:
-    enabled: true
+    enabled: false
     masterEndpoints: ""
 
   dynamicAllocation:
-    enabled: true
+    enabled: false
 
   awsEndpoint: ""
 
@@ -32,13 +33,13 @@ spark:
     tolerations: []
 
   executor:
-    cores: 8
-    requestCoresMilliCPU: 4000
-    memoryMiB: 20480
-    memoryOverheadMiB: 5120
+    cores: 1
+    requestCoresMilliCPU: 2000
+    memoryMiB: 2048
+    memoryOverheadMiB: 384
     ephemeralLocalVolume: {}
     minExecutors: 1
-    maxExecutors: 10
+    maxExecutors: 2
     affinity: {}
     tolerations: []
     labels: {}
@@ -51,7 +52,7 @@ spark:
     spark.driver.maxResultSize: 4g
 
   catalog:
-    enabled: true
+    enabled: false
     hiveMetastoreConfigMap: spark-connect-hive
 
 serviceAccount:
